@@ -1,13 +1,10 @@
 # UniverseSimProtoJ
 
-A real-time interactive starscape running in the browser. No installs, no build step.
+A real-time interactive starscape running in the browser.
 
 ## How to Run
 
-Download all the files, keep them in the same folder, and open `index.html` in your browser. That's it.
-
-> Note: some browsers block local file access for security reasons. If nothing shows up, run it through a simple local server instead:
-> `npx serve .` or use the Live Server extension in VS Code.
+Download the zip, extract it, and double-click `index.html`. That's it — no installs, no server, no build step.
 
 ## Features
 
