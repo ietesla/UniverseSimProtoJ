@@ -249,6 +249,21 @@
     border: none;
     cursor: pointer;
   }
+  .theme-btn[data-theme="rainbow"] {
+    background: linear-gradient(135deg,
+      rgba(255,80,80,0.15), rgba(255,180,0,0.15), rgba(80,255,80,0.15),
+      rgba(0,180,255,0.15), rgba(160,80,255,0.15));
+    border-color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+  }
+  .theme-btn[data-theme="rainbow"]:hover,
+  .theme-btn[data-theme="rainbow"].active {
+    background: linear-gradient(135deg,
+      rgba(255,80,80,0.3), rgba(255,180,0,0.3), rgba(80,255,80,0.3),
+      rgba(0,180,255,0.3), rgba(160,80,255,0.3));
+    border-color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.95);
+  }
 </style>
 </head>
 <body>
@@ -268,6 +283,7 @@
       <button class="theme-btn" data-theme="void">Void</button>
       <button class="theme-btn" data-theme="rose">Rose</button>
       <button class="theme-btn" data-theme="toxic">Toxic</button>
+      <button class="theme-btn" data-theme="rainbow">Rainbow</button>
       <button class="theme-btn" data-theme="custom">Custom</button>
     </div>
     <div id="custom-rgb" style="display:none; flex-direction:column; gap:6px; margin-top:6px;">

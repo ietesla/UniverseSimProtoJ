@@ -64,6 +64,25 @@ const THEMES = {
     trailRGB: [80, 255, 80],
     constellationRGB: [100, 255, 100],
   },
+  rainbow: {
+    label: 'Rainbow',
+    bgColor: [2, 0, 8],
+    starPalette: () => {
+      // Returns a vivid multi-hue palette based on current rainbow hue
+      const palette = [];
+      for (let i = 0; i < 25; i++) {
+        const hue = (rainbowHue + i * 14) % 360;
+        palette.push(hslToHex(hue, 100, 80));
+      }
+      return palette;
+    },
+    mistTint: () => {
+      const [r, g, b] = hslToRGB(rainbowHue, 80, 35);
+      return [r, g, b];
+    },
+    trailRGB: null,   // computed dynamically
+    constellationRGB: null,
+  },
   custom: {
     label: 'Custom',
     bgColor: [2, 0, 8],
@@ -78,6 +97,23 @@ const THEMES = {
     constellationRGB: null,
   },
 };
+
+// ── Rainbow helpers ────────────────────────────────────────────────────────
+let rainbowHue = 0;          // 0–360, advances each frame
+const RAINBOW_SPEED = 18;    // degrees per second
+
+function hslToRGB(h, s, l) {
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [Math.round(f(0)*255), Math.round(f(8)*255), Math.round(f(4)*255)];
+}
+
+function hslToHex(h, s, l) {
+  const [r, g, b] = hslToRGB(h, s, l);
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+}
 
 let customRGB = [255, 255, 255];
 let activeTheme = 'white';
@@ -116,8 +152,9 @@ function paletteToTint(palette) {
 function getTargetColors(name) {
   const th = THEMES[name];
   const palette = th.starPalette();
-  const trail = name === 'custom' ? customRGB : th.trailRGB;
-  const cons   = name === 'custom' ? customRGB : th.constellationRGB;
+  const isDynamic = name === 'custom' || name === 'rainbow';
+  const trail = isDynamic ? (name === 'custom' ? customRGB : hslToRGB(rainbowHue, 100, 70)) : th.trailRGB;
+  const cons   = isDynamic ? (name === 'custom' ? customRGB : hslToRGB((rainbowHue + 30) % 360, 100, 75)) : th.constellationRGB;
   return {
     bg:            th.bgColor,
     mist:          th.mistTint(),
@@ -136,6 +173,26 @@ function lerpRGB(a, b, t) {
 }
 
 function tickThemeTransition(dt) {
+  if (activeTheme === 'rainbow') {
+    rainbowHue = (rainbowHue + RAINBOW_SPEED * dt) % 360;
+    // Continuously push new target colors so the scene keeps cycling
+    const newTarget = getTargetColors('rainbow');
+    themeTo = newTarget;
+    if (themeT >= 1) {
+      themeFrom = { ...themeCurrent };
+      themeT = 0;
+    }
+    // Also re-tint stars gradually
+    const palette = THEMES['rainbow'].starPalette();
+    stars.forEach(layer => layer.forEach(s => {
+      if (Math.random() < dt * 0.3) { // stagger star recolors
+        s.colorFrom = [...s.colorTo];
+        const newColor = pick(palette);
+        s.color = newColor;
+        s.colorTo = hexToRGB(typeof newColor === 'string' ? newColor : '#ffffff');
+      }
+    }));
+  }
   if (themeT >= 1) return;
   themeT = Math.min(1, themeT + dt * TRANSITION_SPEED);
   const ease = 1 - Math.pow(1 - themeT, 3);
