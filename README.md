@@ -4,7 +4,7 @@ A real-time interactive starscape running in the browser.
 
 ## How to Run
 
-Download the zip, extract it, and double-click `index.html`. That's it — no installs, no server, no build step.
+Download the zip, extract it, and double-click `index.html`. That's it.
 
 ## Features
 
