@@ -230,3 +230,6 @@ function drawConstellations() {
     ctx.restore();
   });
 }
+
+// ── Initialise ────────────────────────────────────────────────────────────
+let constellations = makeConstellations();
